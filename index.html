@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Görsel Dönüştürücü — Ücretsiz PNG, JPG, WebP, AVIF</title>
+  <meta name="description" content="Ücretsiz online görsel dönüştürücü. PNG, JPG, WebP ve AVIF formatlarına anında dönüştür. Sunucuya yükleme yok, tamamen tarayıcıda çalışır." />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0a0a0a;
+      --surface: #111111;
+      --surface-2: #1a1a1a;
+      --border: #222222;
+      --accent: #6366f1;
+      --accent-light: #818cf8;
+      --text: #f4f4f5;
+      --text-muted: #71717a;
+      --success: #22c55e;
+      --radius: 14px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* HEADER */
+    header {
+      padding: 24px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: -0.3px;
+    }
+
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, var(--accent), #a855f7);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .badge {
+      font-size: 12px;
+      padding: 3px 10px;
+      background: rgba(99,102,241,0.15);
+      color: var(--accent-light);
+      border: 1px solid rgba(99,102,241,0.3);
+      border-radius: 999px;
+      font-weight: 500;
+    }
+
+    /* HERO */
+    .hero {
+      text-align: center;
+      padding: 72px 24px 48px;
+    }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      padding: 5px 14px;
+      border-radius: 999px;
+      margin-bottom: 24px;
+    }
+
+    .hero-tag span { color: var(--success); font-size: 10px; }
+
+    h1 {
+      font-size: clamp(36px, 5vw, 60px);
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+
+    h1 em {
+      font-style: normal;
+      background: linear-gradient(135deg, var(--accent-light), #a855f7, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: 17px;
+      color: var(--text-muted);
+      max-width: 480px;
+      margin: 0 auto 48px;
+      line-height: 1.6;
+    }
+
+    /* FORMAT PILLS */
+    .formats {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 48px;
+    }
+
+    .format-pill {
+      padding: 6px 16px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+
+    .format-pill.active, .format-pill:hover {
+      background: rgba(99,102,241,0.12);
+      border-color: rgba(99,102,241,0.4);
+      color: var(--accent-light);
+    }
+
+    /* MAIN CARD */
+    .main {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+      width: 100%;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    /* DROP ZONE */
+    .dropzone {
+      padding: 64px 32px;
+      text-align: center;
+      border: 2px dashed var(--border);
+      border-radius: 10px;
+      margin: 20px;
+      cursor: pointer;
+      transition: all 0.25s;
+      position: relative;
+    }
+
+    .dropzone:hover, .dropzone.dragover {
+      border-color: var(--accent);
+      background: rgba(99,102,241,0.04);
+    }
+
+    .drop-icon {
+      width: 56px;
+      height: 56px;
+      background: var(--surface-2);
+      border-radius: 14px;
+      margin: 0 auto 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+
+    .drop-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .drop-sub {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    .btn-upload {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-upload:hover { background: var(--accent-light); transform: translateY(-1px); }
+
+    #fileInput { display: none; }
+
+    /* SETTINGS */
+    .settings {
+      padding: 20px 20px 0;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .setting-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .setting-group select, .setting-group input[type=range] {
+      width: 100%;
+    }
+
+    select {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2371717a' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+    }
+
+    .quality-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    input[type=range] {
+      flex: 1;
+      accent-color: var(--accent);
+      height: 4px;
+    }
+
+    .quality-val {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent-light);
+      min-width: 36px;
+      text-align: right;
+    }
+
+    /* PREVIEWS */
+    .previews {
+      padding: 20px;
+      display: none;
+    }
+
+    .previews.visible { display: block; }
+
+    .previews-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .preview-box {
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .preview-box img {
+      width: 100%;
+      height: 180px;
+      object-fit: contain;
+      display: block;
+      background: #0d0d0d;
+    }
+
+    .preview-info {
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .preview-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .preview-size {
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .size-smaller { color: var(--success); }
+
+    /* ACTION BAR */
+    .action-bar {
+      padding: 0 20px 20px;
+      display: none;
+      gap: 10px;
+    }
+
+    .action-bar.visible { display: flex; }
+
+    .btn-convert {
+      flex: 1;
+      background: linear-gradient(135deg, var(--accent), #a855f7);
+      color: #fff;
+      border: none;
+      padding: 13px 24px;
+      border-radius: 9px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: -0.2px;
+    }
+
+    .btn-convert:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(99,102,241,0.3); }
+    .btn-convert:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .btn-download {
+      background: var(--success);
+      color: #fff;
+      border: none;
+      padding: 13px 20px;
+      border-radius: 9px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+      display: none;
+    }
+
+    .btn-download.visible { display: block; }
+    .btn-download:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+    /* FEATURES */
+    .features {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .feature {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+
+    .feature-icon {
+      font-size: 24px;
+      margin-bottom: 12px;
+    }
+
+    .feature h3 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .feature p {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* FOOTER */
+    footer {
+      margin-top: auto;
+      border-top: 1px solid var(--border);
+      padding: 20px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    footer a { color: var(--text-muted); text-decoration: none; }
+    footer a:hover { color: var(--text); }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 18px;
+      font-size: 14px;
+      font-weight: 500;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      z-index: 100;
+    }
+
+    .toast.show { transform: translateY(0); opacity: 1; }
+
+    @media (max-width: 640px) {
+      h1 { font-size: 32px; }
+      .settings { grid-template-columns: 1fr; }
+      .previews-grid { grid-template-columns: 1fr; }
+      .features { grid-template-columns: 1fr; }
+      header { padding: 16px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">
+      <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2.5">
+        <rect x="3" y="3" width="18" height="18" rx="3"/>
+        <circle cx="8.5" cy="8.5" r="1.5"/>
+        <path d="m21 15-5-5L5 21"/>
+      </svg>
+    </div>
+    Görsel Dönüştürücü
+  </div>
+  <span class="badge">✦ Ücretsiz & Gizli</span>
+</header>
+
+<section class="hero">
+  <div class="hero-tag">
+    <span>●</span> Tarayıcıda çalışır — sunucuya dosya gönderilmez
+  </div>
+  <h1>Görselini <em>anında</em><br>dönüştür</h1>
+  <p class="hero-sub">PNG, JPG, WebP ve AVIF formatları arasında ücretsiz geçiş yap. Kalite ayarla, boyutu küçült.</p>
+  <div class="formats">
+    <span class="format-pill active">PNG</span>
+    <span class="format-pill">JPG</span>
+    <span class="format-pill active">WebP</span>
+    <span class="format-pill">AVIF</span>
+    <span class="format-pill">BMP</span>
+    <span class="format-pill">GIF</span>
+  </div>
+</section>
+
+<main class="main">
+  <div class="card">
+    <div class="dropzone" id="dropzone">
+      <div class="drop-icon">🖼️</div>
+      <div class="drop-title">Görseli buraya sürükle</div>
+      <div class="drop-sub">PNG, JPG, WebP, AVIF, BMP, GIF desteklenir · Maks 20MB</div>
+      <button class="btn-upload" onclick="document.getElementById('fileInput').click()">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Dosya Seç
+      </button>
+      <input type="file" id="fileInput" accept="image/*" />
+    </div>
+
+    <div class="settings">
+      <div class="setting-group">
+        <label>Hedef Format</label>
+        <select id="formatSelect">
+          <option value="image/webp">WebP — En iyi sıkıştırma</option>
+          <option value="image/jpeg">JPG — Evrensel uyumluluk</option>
+          <option value="image/png">PNG — Şeffaflık destekli</option>
+          <option value="image/avif">AVIF — Yeni nesil format</option>
+        </select>
+      </div>
+      <div class="setting-group">
+        <label>Kalite — <span id="qualityLabel">85</span>%</label>
+        <div class="quality-row">
+          <input type="range" id="qualityRange" min="10" max="100" value="85"
+            oninput="document.getElementById('qualityLabel').textContent = this.value" />
+        </div>
+      </div>
+    </div>
+
+    <div class="previews" id="previews">
+      <div class="previews-grid">
+        <div class="preview-box">
+          <img id="previewOriginal" src="" alt="Orijinal" />
+          <div class="preview-info">
+            <span class="preview-label">Orijinal</span>
+            <span class="preview-size" id="sizeOriginal">—</span>
+          </div>
+        </div>
+        <div class="preview-box">
+          <img id="previewConverted" src="" alt="Dönüştürülmüş" />
+          <div class="preview-info">
+            <span class="preview-label">Dönüştürülmüş</span>
+            <span class="preview-size" id="sizeConverted">—</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="action-bar" id="actionBar">
+      <button class="btn-convert" id="btnConvert" onclick="convertImage()">
+        ✦ Dönüştür
+      </button>
+      <button class="btn-download" id="btnDownload" onclick="downloadImage()">
+        ⬇ İndir
+      </button>
+    </div>
+  </div>
+</main>
+
+<section class="features">
+  <div class="feature">
+    <div class="feature-icon">🔒</div>
+    <h3>%100 Gizli</h3>
+    <p>Görselin hiçbir sunucuya yüklenmez. Tüm işlemler tarayıcında, cihazında gerçekleşir.</p>
+  </div>
+  <div class="feature">
+    <div class="feature-icon">⚡</div>
+    <h3>Anında Dönüşüm</h3>
+    <p>Canvas API ile milisaniyeler içinde dönüştür. İnternet hızından bağımsız çalışır.</p>
+  </div>
+  <div class="feature">
+    <div class="feature-icon">🎛️</div>
+    <h3>Kalite Kontrolü</h3>
+    <p>Kalite kaydırıcısıyla dosya boyutu ile görüntü kalitesi arasındaki dengeyi kendin ayarla.</p>
+  </div>
+</section>
+
+<footer>
+  <span>Emre Canişci tarafından yapıldı</span>
+  <div style="display:flex;gap:20px">
+    <a href="https://emrecanisci.com.tr">emrecanisci.com.tr</a>
+    <a href="https://github.com/emrecanisci">GitHub</a>
+  </div>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  let currentFile = null;
+  let convertedBlob = null;
+  let convertedExt = 'webp';
+
+  const dropzone = document.getElementById('dropzone');
+  const fileInput = document.getElementById('fileInput');
+
+  // Drag & Drop
+  dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('dragover'); });
+  dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+  dropzone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropzone.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) loadFile(file);
+  });
+
+  fileInput.addEventListener('change', e => {
+    if (e.target.files[0]) loadFile(e.target.files[0]);
+  });
+
+  function loadFile(file) {
+    if (file.size > 20 * 1024 * 1024) { showToast('⚠️ Dosya 20MB limitini aşıyor'); return; }
+    currentFile = file;
+    convertedBlob = null;
+    document.getElementById('btnDownload').classList.remove('visible');
+
+    const reader = new FileReader();
+    reader.onload = e => {
+      document.getElementById('previewOriginal').src = e.target.result;
+      document.getElementById('sizeOriginal').textContent = formatBytes(file.size);
+      document.getElementById('previewConverted').src = '';
+      document.getElementById('sizeConverted').textContent = '—';
+      document.getElementById('previews').classList.add('visible');
+      document.getElementById('actionBar').classList.add('visible');
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function convertImage() {
+    if (!currentFile) return;
+    const format = document.getElementById('formatSelect').value;
+    const quality = parseInt(document.getElementById('qualityRange').value) / 100;
+
+    const extMap = { 'image/webp': 'webp', 'image/jpeg': 'jpg', 'image/png': 'png', 'image/avif': 'avif' };
+    convertedExt = extMap[format] || 'webp';
+
+    const btn = document.getElementById('btnConvert');
+    btn.textContent = '⏳ Dönüştürülüyor...';
+    btn.disabled = true;
+
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+
+      canvas.toBlob(blob => {
+        convertedBlob = blob;
+        const url = URL.createObjectURL(blob);
+        document.getElementById('previewConverted').src = url;
+
+        const sizeEl = document.getElementById('sizeConverted');
+        sizeEl.textContent = formatBytes(blob.size);
+        if (blob.size < currentFile.size) {
+          sizeEl.className = 'preview-size size-smaller';
+          const ratio = Math.round((1 - blob.size / currentFile.size) * 100);
+          sizeEl.textContent += ` (-%${ratio})`;
+        }
+
+        document.getElementById('btnDownload').classList.add('visible');
+        btn.textContent = '✦ Tekrar Dönüştür';
+        btn.disabled = false;
+        showToast('✅ Dönüştürme tamamlandı!');
+      }, format, quality);
+    };
+
+    const reader = new FileReader();
+    reader.onload = e => img.src = e.target.result;
+    reader.readAsDataURL(currentFile);
+  }
+
+  function downloadImage() {
+    if (!convertedBlob) return;
+    const baseName = currentFile.name.replace(/\.[^.]+$/, '');
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(convertedBlob);
+    a.download = `${baseName}.${convertedExt}`;
+    a.click();
+    showToast('⬇️ İndiriliyor...');
+  }
+
+  function formatBytes(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+</script>
+</body>
+</html>
